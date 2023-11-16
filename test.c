@@ -24,8 +24,6 @@
 
 #include "src/rv_isa_string_parser.h"
 
-#define DEFAULT_MAJOR_VERSION 2
-
 int main(int argc, char *argv[]) {
   rv_isa_t isa;
   rv_isa_parse_error_t err;
@@ -35,7 +33,7 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
-  if (!rv_isa_string_parse(argv[1], &isa, DEFAULT_MAJOR_VERSION, 0, &err)) {
+  if (!rv_isa_string_parse(argv[1], &isa, 0, &err)) {
     fprintf(stderr, "Failed to parse ISA string starting at \"%s\"\n", err.location);
     switch (err.reason) {
     case RV_ISA_AMBIGUOUS_P:
@@ -61,12 +59,17 @@ int main(int argc, char *argv[]) {
   }
   printf("Found %ld extensions\n", isa.num_exts);
   isa.exts = malloc(sizeof(rv_isa_ext_t) * isa.num_exts);
-  rv_isa_string_parse(argv[1], &isa, DEFAULT_MAJOR_VERSION, isa.num_exts, &err);
+  rv_isa_string_parse(argv[1], &isa, isa.num_exts, &err);
 
   for (size_t i = 0; i < isa.num_exts; i++) {
     printf("Extension ");
     fwrite(isa.exts[i].name, 1, isa.exts[i].len, stdout);
-    printf(" major=%ld minor=%ld", isa.exts[i].major, isa.exts[i].minor);
+    if (isa.exts[i].major == -1) {
+      printf(" major=default");
+    } else {
+      printf(" major=%ld", isa.exts[i].major);
+    }
+    printf(" minor=%ld", isa.exts[i].minor);
     putchar('\n');
   }
 

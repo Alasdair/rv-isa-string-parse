@@ -39,9 +39,11 @@ typedef struct {
   char *name;
   // The length of the extension name in characters
   size_t len;
-  // The extension major version. This should be whatever the current
-  // version of the RISC-V ISA manuals is if absent, so we pass that
-  // as an argument to the parse function.
+  // The extension major version. For standard extensions the default
+  // if absent should be whatever the current version of the RISC-V
+  // ISA manuals is. For non-standard extensions anything goes. For
+  // this reason, we return -1 when this is absent and the consumer
+  // can handle the correct per-extension logic.
   long major;
   // The extension minor version, or 0 if absent
   long minor;
@@ -98,7 +100,6 @@ typedef struct {
 // placed in the err struct.
 bool rv_isa_string_parse(char *isa_string,
                          rv_isa_t *isa,
-                         long default_major_version,
                          size_t max_exts,
                          rv_isa_parse_error_t *err);
 

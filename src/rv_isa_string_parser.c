@@ -44,7 +44,6 @@ bool rv_isa_string_consume(char **isa_string, size_t n, char *cmp)
 // Parse a sequence of extensions in a RISC-V ISA string
 bool rv_isa_string_parse_exts(char **isa_string,
                               rv_isa_t *isa,
-                              long default_major_version,
                               size_t max_exts,
                               rv_isa_parse_error_t *err)
 {
@@ -92,7 +91,7 @@ parse_ext_start:
     c = tolower((*isa_string)[0]);
   };
 
-  ext = (rv_isa_ext_t){ .name = NULL, .len = 0, .major = default_major_version, .minor = 0 };
+  ext = (rv_isa_ext_t){ .name = NULL, .len = 0, .major = -1, .minor = 0 };
 
   for (int i = 0; i < (int)strlen(single_char_exts); i++) {
     if (c == single_char_exts[i]) {
@@ -218,7 +217,6 @@ parse_ext_end:
 
 bool rv_isa_string_parse(char *isa_string,
                          rv_isa_t *isa,
-                         long default_major_version,
                          size_t max_exts,
                          rv_isa_parse_error_t *err)
 {
@@ -234,5 +232,5 @@ bool rv_isa_string_parse(char *isa_string,
     return rv_isa_parse_error(&isa_string, RV_ISA_INVALID_XLEN, err);
   }
 
-  return rv_isa_string_parse_exts(&isa_string, isa, default_major_version, max_exts, err);
+  return rv_isa_string_parse_exts(&isa_string, isa, max_exts, err);
 }
